@@ -8,10 +8,10 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/include",
-                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/src",
-                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/.pio/libdeps/ATmega328P/FreeRTOS/src",
-                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/.pio/libdeps/ATmega328P/ModbusSlave/src",
+                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/include",
+                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/src",
+                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/.pio/libdeps/ATmega328P/FreeRTOS/src",
+                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/.pio/libdeps/ATmega328P/ModbusSlave/src",
                 "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/cores/MiniCore",
                 "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/variants/standard",
                 "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/AVR_examples/src",
@@ -27,10 +27,10 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/include",
-                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/src",
-                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/.pio/libdeps/ATmega328P/FreeRTOS/src",
-                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/.pio/libdeps/ATmega328P/ModbusSlave/src",
+                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/include",
+                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/src",
+                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/.pio/libdeps/ATmega328P/FreeRTOS/src",
+                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/.pio/libdeps/ATmega328P/ModbusSlave/src",
                     "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/cores/MiniCore",
                     "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/variants/standard",
                     "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/AVR_examples/src",
