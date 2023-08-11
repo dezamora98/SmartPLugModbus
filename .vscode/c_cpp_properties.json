@@ -1,0 +1,66 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/include",
+                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/src",
+                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/.pio/libdeps/ATmega328P/FreeRTOS/src",
+                "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/.pio/libdeps/ATmega328P/ModbusSlave/src",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/cores/MiniCore",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/variants/standard",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/AVR_examples/src",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/EEPROM/src",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/Optiboot_flasher/src",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/SPI/src",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/SPI1/src",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/SoftwareSerial/src",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/Wire/src",
+                "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/Wire1/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/include",
+                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/src",
+                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/.pio/libdeps/ATmega328P/FreeRTOS/src",
+                    "d:/Documents/Trabajo/AlaSoluciones/Project_ChargeStation/SmartPlugModbus/FW_SmartPlugModbus/SmartPlugModbus/.pio/libdeps/ATmega328P/ModbusSlave/src",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/cores/MiniCore",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/variants/standard",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/AVR_examples/src",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/EEPROM/src",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/Optiboot_flasher/src",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/SPI/src",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/SPI1/src",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/SoftwareSerial/src",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/Wire/src",
+                    "C:/Users/0K/.platformio/packages/framework-arduino-avr-minicore/libraries/Wire1/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60110",
+                "ARDUINO_AVR_ATmega328P",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega328P__",
+                ""
+            ],
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++17",
+            "compilerPath": "C:/Users/0K/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+            "compilerArgs": [
+                "-mmcu=atmega328p",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
