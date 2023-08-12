@@ -68,8 +68,6 @@ bool Coil[8];
 uint8_t HoldingRegister[8];
 uint8_t InputRegister[26];
 
-// You shouldn't have to change anything below this to get this example to work
-
 #ifdef RS485_CTRL_PIN
 // Modbus object declaration
 Modbus slave(SERIAL_PORT, SLAVE_ID, RS485_CTRL_PIN);
@@ -77,9 +75,13 @@ Modbus slave(SERIAL_PORT, SLAVE_ID, RS485_CTRL_PIN);
 Modbus slave(SERIAL_PORT, SLAVE_ID);
 #endif
 
-uint8_t forceCoils(uint8_t fc, uint16_t address, uint16_t length);
-uint8_t forceHoldingRegisters(uint8_t fc, uint16_t address, uint16_t length);
-uint8_t readInputRegisters(uint8_t fc, uint16_t address, uint16_t length);
+uint8_t forceCoils(uint8_t fc, uint16_t address, uint16_t length, void* p);
+uint8_t forceHoldingRegisters(uint8_t fc, uint16_t address, uint16_t length, void* p);
+uint8_t readInputRegisters(uint8_t fc, uint16_t address, uint16_t length, void* p);
+
+void TaskModbus(void* vp);
+void TaskProtection(void* vp);
+void TaskSensing(void* vp);
 
 void setup()
 {
@@ -97,14 +99,41 @@ void setup()
     // Set the serial port and slave to the given baudrate.
     SERIAL_PORT.begin(SERIAL_BAUDRATE);
     slave.begin(SERIAL_BAUDRATE);
+
+    // creando tareas
+    xTaskCreate(TaskSensing,"Sensing",256,NULL,1,NULL);
+    xTaskCreate(TaskModbus,"Modbus",256,NULL,2,NULL);
+    xTaskCreate(TaskProtection,"Protection",256,NULL,3,NULL);
 }
 
-void loop()
+void loop(){}
+
+void TaskModbus(void* vp)
 {
-    // Listen for modbus requests on the serial port.
-    // When a request is received it's going to get validated.
-    // And if there is a function registered to the received function code, this function will be executed.
-    slave.poll();
+    for(;;)
+    {
+        slave.poll();
+        vTaskDelay(10);
+    }
+}
+
+void TaskProtection(void* vp)
+{
+    //esta tarea es necesaria porque es mucho más 
+    //jugar con el comparador para HW para los mecanismos de protección de corriente y tensión y añadir un semáforo para los registros
+    for(;;)
+    {
+        vTaskDelay(1);
+    }
+}
+
+void TaskSensing(void* vp)
+{
+    //Sensado de corriente y tensión con el ADC
+    for(;;)
+    {
+        vTaskDelay(100);
+    }
 }
 
 // Modbus handler functions
@@ -113,7 +142,7 @@ void loop()
 //     uint16_t address - first register/coil address
 //     uint16_t length/status - length of data / coil status
 
-uint8_t forceCoils(uint8_t fc, uint16_t address, uint16_t length)
+uint8_t forceCoils(uint8_t fc, uint16_t address, uint16_t length, void* p)
 {
     // Check if the requested addresses exist in the array
     if ((address + length) > sizeof(Coil) / sizeof(Coil[0]))
@@ -136,7 +165,7 @@ uint8_t forceCoils(uint8_t fc, uint16_t address, uint16_t length)
     return STATUS_OK;
 }
 
-uint8_t forceHoldingRegisters(uint8_t fc, uint16_t address, uint16_t length)
+uint8_t forceHoldingRegisters(uint8_t fc, uint16_t address, uint16_t length, void* p)
 {
     // Check if the requested addresses exist in the array
     if ((address + length) > sizeof(HoldingRegister) / sizeof(HoldingRegister[0]))
@@ -154,7 +183,7 @@ uint8_t forceHoldingRegisters(uint8_t fc, uint16_t address, uint16_t length)
     return STATUS_OK;
 }
 
-uint8_t readInputRegisters(uint8_t fc, uint16_t address, uint16_t length)
+uint8_t readInputRegisters(uint8_t fc, uint16_t address, uint16_t length, void* p)
 {
     // Check if the requested addresses exist in the array
     if ((address + length) > sizeof(InputRegister) / sizeof(InputRegister[0]))
