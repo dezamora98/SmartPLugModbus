@@ -1,4 +1,7 @@
 /*
+ * FreeModbus Libary: AVR Port
+ * Copyright (C) 2023 Daniel E. Zamora Sifredo <dezamora98@gmail.com>
+ *   - Initial version and ATmega328P support
  * FreeModbus Libary: ATMega168 Port
  * Copyright (C) 2006 Christian Walter <wolti@sil.at>
  *   - Initial version and ATmega168 support

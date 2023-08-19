@@ -1,6 +1,13 @@
 /*
+ * FreeModbus Libary: AVR Port
+ * Copyright (C) 2023 Daniel E. Zamora Sifredo <dezamora98@gmail.com>
+ *   - Initial version and ATmega328P support
  * FreeModbus Libary: ATMega168 Port
  * Copyright (C) 2006 Christian Walter <wolti@sil.at>
+ *   - Initial version and ATmega168 support
+ * Modfications Copyright (C) 2006 Tran Minh Hoang:
+ *   - ATmega8, ATmega16, ATmega32 support
+ *   - RS485 support for DS75176
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
