@@ -145,13 +145,11 @@ xMBPortSerialGetByte( CHAR * pucByte )
 ISR( SIG_USART_DATA )
 {
     pxMBFrameCBTransmitterEmpty(  );
-    PORTB |= 1<<PORTB0;
 }
 
 ISR( SIG_USART_RECV )
 {
     pxMBFrameCBByteReceived(  );
-    PORTB |= 1<<PORTB1;
 }
 
 #ifdef RTS_ENABLE
