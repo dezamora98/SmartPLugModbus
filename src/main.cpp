@@ -22,19 +22,17 @@
  */
 
 /* ----------------------- AVR includes -------------------------------------*/
-#include <FSM.h>
 #include <avr/io.h>
-#include <avr/cpufunc.h>
 #include <avr/delay.h>
-#include <avr/interrupt.h>
-#include <ModbusAddr.h>
 
-/* ----------------------- Modbus includes ----------------------------------*/
+/* ------------------------------ includes ----------------------------------*/
 #include "mb.h"
 #include "mbport.h"
+#include "FSM.h"
+#include "Analog.h"
+#include "ModbusAddr.h"
 
 /* ----------------------- Defines ------------------------------------------*/
-
 
 /* ----------------------- Static variables ---------------------------------*/
 
@@ -42,12 +40,12 @@
 inline void FSM_init(void);
 
 /* ----------------------- Start implementation -----------------------------*/
-int main(void) {
-
-
+int main(void)
+{
+    
     eMBInit(MB_RTU, SlaveID, 0, 38400, MB_PAR_NONE);
 
-	/* Enable the Modbus Protocol Stack. */
+    /* Enable the Modbus Protocol Stack. */
     eMBEnable();
 
     FSM_init();
@@ -59,7 +57,7 @@ inline void FSM_init(void)
     eMBErrorCode MB_ERROR;
 
     while (true)
-    {       
+    {
         switch (FSM_State)
         {
         case ST_Standby:
@@ -70,7 +68,7 @@ inline void FSM_init(void)
             {
                 MB_ERROR = eMBPoll(&MB_eEvent);
                 _delay_us(10);
-            }while (MB_ERROR == MB_ENOERR && MB_eEvent !=  EV_FRAME_SENT);
+            } while (MB_ERROR == MB_ENOERR && MB_eEvent != EV_FRAME_SENT);
             MB_ERROR = MB_ENOERR;
             MB_eEvent = EV_READY;
             FSM_State = ST_Standby;
@@ -80,5 +78,4 @@ inline void FSM_init(void)
             break;
         }
     }
-    
 }
