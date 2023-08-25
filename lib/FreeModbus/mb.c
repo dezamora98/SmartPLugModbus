@@ -332,7 +332,7 @@ eMBDisable(void)
 }
 
 eMBErrorCode
-eMBPoll(void)
+eMBPoll(eMBEventType* ActualEvent)
 {
     static UCHAR *ucMBFrame;
     static UCHAR ucRcvAddress;
@@ -354,6 +354,7 @@ eMBPoll(void)
      * Otherwise we will handle the event. */
     if (xMBPortEventGet(&eEvent) == TRUE)
     {
+        *ActualEvent = eEvent;
         switch (eEvent)
         {
         case EV_READY:
@@ -411,5 +412,7 @@ eMBPoll(void)
             break;
         }
     }
+
+
     return MB_ENOERR;
 }

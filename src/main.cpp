@@ -22,7 +22,9 @@
  */
 
 /* ----------------------- AVR includes -------------------------------------*/
+#include <FSM.h>
 #include <avr/io.h>
+#include <avr/cpufunc.h>
 #include <avr/delay.h>
 #include <avr/interrupt.h>
 #include <ModbusAddr.h>
@@ -32,10 +34,12 @@
 #include "mbport.h"
 
 /* ----------------------- Defines ------------------------------------------*/
-#define REG_INPUT_START 1000
-#define REG_INPUT_NREGS 4
+
 
 /* ----------------------- Static variables ---------------------------------*/
+
+/* --------------------- function prototypes ---------------------------------*/
+inline void FSM_init(void);
 
 /* ----------------------- Start implementation -----------------------------*/
 int main(void) {
@@ -46,8 +50,35 @@ int main(void) {
 	/* Enable the Modbus Protocol Stack. */
     eMBEnable();
 
-	for (;;) {
-	    eMBPoll();
-        _delay_us(20);
-	}
+    FSM_init();
+}
+
+inline void FSM_init(void)
+{
+    eMBEventType MB_eEvent;
+    eMBErrorCode MB_ERROR;
+
+    while (true)
+    {       
+        switch (FSM_State)
+        {
+        case ST_Standby:
+            
+            break;
+        case ST_ModbusPull:
+            do
+            {
+                MB_ERROR = eMBPoll(&MB_eEvent);
+                _delay_us(10);
+            }while (MB_ERROR == MB_ENOERR && MB_eEvent !=  EV_FRAME_SENT);
+            MB_ERROR = MB_ENOERR;
+            MB_eEvent = EV_READY;
+            FSM_State = ST_Standby;
+            break;
+
+        default:
+            break;
+        }
+    }
+    
 }
