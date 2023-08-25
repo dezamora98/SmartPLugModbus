@@ -1,13 +1,6 @@
 /*
- * FreeModbus Libary: AVR Port
- * Copyright (C) 2023 Daniel E. Zamora Sifredo <dezamora98@gmail.com>
- *   - Initial version and ATmega328P support
  * FreeModbus Libary: ATMega168 Port
  * Copyright (C) 2006 Christian Walter <wolti@sil.at>
- *   - Initial version and ATmega168 support
- * Modfications Copyright (C) 2006 Tran Minh Hoang:
- *   - ATmega8, ATmega16, ATmega32 support
- *   - RS485 support for DS75176
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,12 +16,13 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * File: $Id$
+ * File: $Id: mbcrc.c,v 1.2 2006/05/14 21:55:01 wolti Exp $
  */
 
 /* ----------------------- System includes ----------------------------------*/
 
 #include <avr/pgmspace.h>
+
 
 /* ----------------------- Platform includes --------------------------------*/
 #include "port.h"

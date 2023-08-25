@@ -125,8 +125,12 @@ typedef long LONG;
 #define RXEN RXEN0
 #define RXCIE RXCIE0
 #define TXCIE TXCIE0
+
 #define UCSRB UCSR0B
 #define UBRR UBRR0
+#define UDRE UDRIE0
+
+
 #define UDR UDR0
 #define SIG_UART_TRANS USART_TX_vect
 #define SIG_USART_DATA USART_UDRE_vect
@@ -137,7 +141,7 @@ typedef long LONG;
 #define UPM0 UPM00
 #define UPM1 UPM01
 #define UCSRC UCSR0C
-#define UDRE UDRE0
+
 
 #endif
 

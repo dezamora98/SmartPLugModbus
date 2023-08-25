@@ -26,9 +26,9 @@
  * File: $Id$
  */
 
-/* ----------------------- AVR includes -------------------------------------*/
 #include <avr/io.h>
 #include <avr/interrupt.h>
+
 
 /* ----------------------- Platform includes --------------------------------*/
 #include "port.h"
@@ -88,8 +88,7 @@ vMBPortTimersDisable(  )
     TIFR1 |= _BV( OCF1A ) ;
 }
 
-ISR( SIG_OUTPUT_COMPARE1A )
+ISR( TIMER1_COMPA_vect  )
 {
     ( void )pxMBPortCBTimerExpired(  );
 }
-

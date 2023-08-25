@@ -5,7 +5,7 @@
 #include <avr/io.h>
 #include <stdbool.h>
 
-enum class Addr_OutCoil
+enum Addr_Coil
 {
     Reset = 0,
     Plug_0,
@@ -14,87 +14,91 @@ enum class Addr_OutCoil
     Plug_3,
     Plug_4,
     Plug_5,
-    Plug_6,
-    Plug_7,
 };
 
-enum class Addr_OutReg
+enum Addr_HoldingReg
 {
-    Param_OverCurrent = 0,
+    Param_OverCurrent = 0,      //
     Param_LowCurrent,
     Param_OverVoltage,
     Param_LowVoltage,
+    Param_Timeout_LowCurrent,
+    Param_Timeout_OverCurrent,
+    Param_Timeout_LowVoltage,
+    Param_Timeout_OverVoltage,
 };
 
-enum class Addr_InReg
+enum Addr_InputReg
 {
-    PlugVoltage = 0,
-    PlugState_0,
-    PlugState_1,
-    PlugState_2,
-    PlugState_3,
-    PlugState_4,
-    PlugState_5,
-    PlugState_6,
-    PlugState_7,
-    PlugCurrent_0,
-    PlugCurrent_1,
-    PlugCurrent_2,
-    PlugCurrent_3,
-    PlugCurrent_4,
-    PlugCurrent_5,
-    PlugCurrent_6,
-    PlugCurrent_7,
+    Reg_PlugState_0 = 0,
+    Reg_PlugState_1,
+    Reg_PlugState_2,
+    Reg_PlugState_3,
+    Reg_PlugState_4,
+    Reg_PlugState_5,
+
+    Reg_PlugVoltage,
+    Reg_BoardCurrent, 
+    Reg_PlugCurrent_0,
+    Reg_PlugCurrent_1,
+    Reg_PlugCurrent_2,
+    Reg_PlugCurrent_3,
+    Reg_PlugCurrent_4,
+    Reg_PlugCurrent_5,
 };
 
-enum class PlugState
+enum PlugState
 {
-    Off,
-    On,
-    OverCurrent,
-    LowCurrent,
-    OverVoltage,
-    LowVoltage,
+    st_Off,
+    st_On,
+    st_OverCurrent,
+    st_LowCurrent,
+    st_OverVoltage,
+    st_LowVoltage,
 };
 
-static bool OutCoil[9];
-static uint16_t OutReg[4];
-static uint16_t InReg[16];
-
-eMBErrorCode eMDStatus;
+static bool Coil[7];
+static uint16_t HoldingReg[8];
+static uint16_t InputReg[14];
 #define SlaveID 0x01
 
 eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,
                              USHORT usNRegs, eMBRegisterMode eMode)
 {
-    PORTC = 1 << PORTC0;
 
-    if (eMode == MB_REG_READ)
+    if ((usAddress + usNRegs) > (sizeof(HoldingReg) / sizeof(HoldingReg[0])))
     {
-        if ((usAddress + usNRegs - 1) > (sizeof(OutReg) / sizeof(OutReg[0])))
-        {
-            return MB_ENOREG;
-        }
-    }
-    else
-    {
-        return MB_EINVAL;
+        return MB_ENOREG;
     }
 
-    for (uint8_t i = 0; i < usNRegs; i++)
+    for (uint8_t i = 0; i < usNRegs; ++i)
     {
 
         if (eMode == MB_REG_READ)
         {
 
-            pucRegBuffer[i * 2 + 0] = (uint8_t)(OutReg[i + usAddress] >> 8);
-            pucRegBuffer[i * 2 + 1] = (uint8_t)(OutReg[i + usAddress] & 0xFF);
+            pucRegBuffer[i * 2 + 0] = (uint8_t)(HoldingReg[i + usAddress] >> 8);
+            pucRegBuffer[i * 2 + 1] = (uint8_t)(HoldingReg[i + usAddress] & 0xFF);
         }
         else if (eMode == MB_REG_WRITE)
         {
 
-            OutReg[i + usAddress] = (pucRegBuffer[i * 2 + 0] << 8) | pucRegBuffer[i * 2 + 1];
+            HoldingReg[i + usAddress] = (pucRegBuffer[i * 2 + 0] << 8) | pucRegBuffer[i * 2 + 1];
         }
+    }
+    return MB_ENOERR;
+}
+
+eMBErrorCode eMBRegInputCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNRegs)
+{
+    if ((usAddress + usNRegs) > (sizeof(InputReg) / sizeof(InputReg[0])))
+    {
+        return MB_ENOREG;
+    }
+    for(uint8_t i = 0; i < usNRegs; ++i)
+    {
+        pucRegBuffer[i * 2 + 0] = (uint8_t)(InputReg[i + usAddress] >> 8);
+        pucRegBuffer[i * 2 + 1] = (uint8_t)(InputReg[i + usAddress] & 0xFF);
     }
     return MB_ENOERR;
 }
@@ -103,11 +107,6 @@ eMBErrorCode eMBRegCoilsCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNCoil
                            eMBRegisterMode eMode)
 {
     return MB_ENOERR;
-}
-
-eMBErrorCode eMBRegInputCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNRegs)
-{
-    return MB_ENOREG;
 }
 
 eMBErrorCode eMBRegDiscreteCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNDiscrete)
