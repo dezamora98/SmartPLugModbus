@@ -45,6 +45,7 @@ enum Addr_InputReg
     Reg_PlugCurrent_3,
     Reg_PlugCurrent_4,
     Reg_PlugCurrent_5,
+    Reg_TempMCU
 };
 
 enum PlugState
@@ -59,7 +60,7 @@ enum PlugState
 
 static bool Coil[7];
 static uint16_t HoldingReg[8];
-static uint16_t InputReg[14];
+static uint16_t InputReg[15];
 #define SlaveID 0x01
 
 eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,
