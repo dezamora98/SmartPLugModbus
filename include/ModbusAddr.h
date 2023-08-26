@@ -14,18 +14,22 @@ enum Addr_Coil
     Plug_3,
     Plug_4,
     Plug_5,
+    Size_CoilArray
 };
 
 enum Addr_HoldingReg
 {
-    Param_OverCurrent = 0,      //
-    Param_LowCurrent,
+    Param_PlugOverCurrent = 0,      //
+    Param_PlugLowCurrent,
     Param_OverVoltage,
     Param_LowVoltage,
-    Param_Timeout_LowCurrent,
-    Param_Timeout_OverCurrent,
-    Param_Timeout_LowVoltage,
-    Param_Timeout_OverVoltage,
+    Param_TimeoutPlugLowCurrent,
+    Param_TimeoutPlugOverCurrent,
+    Param_TimeoutLowVoltage,
+    Param_TimeoutOverVoltage,
+    Param_HighTemperature,
+    Param_SystemOverCurrent,
+    Size_HoldingArray
 };
 
 enum Addr_InputReg
@@ -45,7 +49,8 @@ enum Addr_InputReg
     Reg_PlugCurrent_3,
     Reg_PlugCurrent_4,
     Reg_PlugCurrent_5,
-    Reg_TempMCU
+    Reg_TempMCU,
+    Size_InputArray
 };
 
 enum PlugState
@@ -58,9 +63,9 @@ enum PlugState
     st_LowVoltage,
 };
 
-static bool Coil[7];
-static uint16_t HoldingReg[8];
-static uint16_t InputReg[15];
+volatile bool Coil[Size_CoilArray];
+volatile uint16_t HoldingReg[Size_HoldingArray];
+volatile uint16_t InputReg[Size_InputArray];
 #define SlaveID 0x01
 
 eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,

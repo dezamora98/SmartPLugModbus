@@ -44,6 +44,8 @@
 #define ENTER_CRITICAL_SECTION() cli()
 #define EXIT_CRITICAL_SECTION() sei()
 
+#define RTS_ENABLE
+
 #define assert(x)
 
 typedef char BOOL;
@@ -149,9 +151,9 @@ typedef long LONG;
 /* ----------------------- RS485 specifics ----------------------------------*/
 #ifdef RTS_ENABLE
 
-#define RTS_PIN PB0
-#define RTS_DDR DDRB
-#define RTS_PORT PORTB
+#define RTS_PIN PD2
+#define RTS_DDR DDRD
+#define RTS_PORT PORTD
 
 #define RTS_INIT                     \
     do                               \

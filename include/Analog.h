@@ -8,13 +8,15 @@
 #define INIT_AN_REG Reg_PlugVoltage
 static const uint8_t Analog_Chanel[] = {5, 4, 0, 1, 2, 3, 6, 7, 8}; // defines the ordered path of ADC readings
 static volatile uint8_t Analog_Iterator = 0;                        // analog channel iterator
+#define size_ACH sizeof(Analog_Chanel) / sizeof(Analog_Chanel[0])   // number of analog channels
+#define getAddrReg_ACH(i) INIT_AN_REG + i                           // get analog channel register address
 
 ISR(ADC_vect)
 {
     /*saving the channel reading in the corresponding register in MODBUS.*/
-    InputReg[INIT_AN_REG + Analog_Iterator++] = ADC;
+    InputReg[getAddrReg_ACH(Analog_Iterator)] = ADC;
 
-    if (Analog_Iterator == sizeof(Analog_Chanel) / sizeof(Analog_Chanel[0]))
+    if (++Analog_Iterator == size_ACH)
     {
         Analog_Iterator = 0;
     }
@@ -74,5 +76,7 @@ inline void AnalogInit(void)
     /* start init conversion */
     ADCSRA |= 1 << ADSC;
 }
+
+
 
 #endif // !ANALOG_H

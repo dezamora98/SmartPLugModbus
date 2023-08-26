@@ -23,13 +23,14 @@
 
 /* ----------------------- AVR includes -------------------------------------*/
 #include <avr/io.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 
 /* ------------------------------ includes ----------------------------------*/
 #include "mb.h"
 #include "mbport.h"
 #include "FSM.h"
 #include "Analog.h"
+#include "GPIO.h"
 #include "ModbusAddr.h"
 
 /* ----------------------- Defines ------------------------------------------*/
@@ -42,7 +43,7 @@ inline void FSM_init(void);
 /* ----------------------- Start implementation -----------------------------*/
 int main(void)
 {
-    
+
     eMBInit(MB_RTU, SlaveID, 0, 38400, MB_PAR_NONE);
 
     /* Enable the Modbus Protocol Stack. */
@@ -61,8 +62,67 @@ inline void FSM_init(void)
         switch (FSM_State)
         {
         case ST_Standby:
-            
+            for (uint8_t i = 0; i < size_ACH; ++i)
+            {
+                // checking voltage level
+                if (getAddrReg_ACH(i) == Reg_PlugVoltage)
+                {
+                    if (InputReg[Reg_PlugVoltage] > HoldingReg[Param_OverVoltage])
+                    {
+                        FSM_State = ST_Protect_OverVoltage;
+                        break;
+                    }
+                    else if (InputReg[Reg_BoardCurrent] > HoldingReg[Param_LowVoltage])
+                    {
+                        FSM_State = ST_Protect_LowVoltage;
+                        break;
+                    }
+                }
+                // checking the current in the plugs
+                else if (getAddrReg_ACH(i) >= Reg_PlugCurrent_0 && getAddrReg_ACH(i) <= Reg_PlugCurrent_5)
+                {
+                    if (InputReg[getAddrReg_ACH(i)] >= HoldingReg[Param_PlugOverCurrent])
+                    {
+                        /*include system timeout protect*/
+                        /*-> here <-*/
+                        /* for testing, the timeout protection will be ignored */
+                        uint8_t plug = Reg_PlugCurrent_0 - getAddrReg_ACH(i);
+                        RELAY_OFF(plug);
+                        InputReg[plug] = st_OverCurrent;
+                        Coil[plug + 1] = false;
+                    }
+                    else if (InputReg[getAddrReg_ACH(i)] <= HoldingReg[Param_PlugLowCurrent])
+                    {
+                        /*include system timeout protect*/
+                        /*-> here <-*/
+                        /* for testing, the timeout protection will be ignored */
+                        uint8_t plug = Reg_PlugCurrent_0 - getAddrReg_ACH(i);
+                        RELAY_OFF(plug);
+                        InputReg[plug] = st_LowCurrent;
+                        Coil[plug + 1] = false;
+                    }
+                }
+                // checking CPU temperature
+                else if (getAddrReg_ACH(i) == Reg_PlugVoltage)
+                {
+                    if (InputReg[Reg_TempMCU] >= Param_HighTemperature)
+                    {
+                        FSM_State = ST_Protect_CriticalTem;
+                        break;
+                    }
+                }
+                // checking of current level on main board
+                else if (getAddrReg_ACH(i) == Reg_BoardCurrent)
+                {
+                    if (InputReg[Reg_BoardCurrent] >= Param_SystemOverCurrent)
+                    {
+                        FSM_State = Param_SystemOverCurrent;
+                        break;
+                    }
+                }
+            }
             break;
+
         case ST_ModbusPull:
             do
             {
@@ -74,7 +134,25 @@ inline void FSM_init(void)
             FSM_State = ST_Standby;
             break;
 
+        case ST_Protect_OverVoltage:
+            RELAY_PORT = ALL_OFF;
+            break;
+
+        case ST_Protect_LowVoltage:
+            RELAY_PORT = ALL_OFF;
+            break;
+
+        case ST_Protect_CriticalTem:
+            RELAY_PORT = ALL_OFF;
+            break;
+        
+        case ST_Protect_SystemOverCurrent:
+            RELAY_PORT = ALL_OFF;
+            break;
+
         default:
+            RELAY_PORT = ALL_OFF;
+            /*System ERROR*/
             break;
         }
     }
