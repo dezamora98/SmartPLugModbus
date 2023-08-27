@@ -24,6 +24,7 @@
 /* ----------------------- AVR includes -------------------------------------*/
 #include <avr/io.h>
 #include <util/delay.h>
+#include <util/twi.h>
 
 /* ------------------------------ includes ----------------------------------*/
 #include "mb.h"
@@ -31,7 +32,7 @@
 #include "FSM.h"
 #include "Analog.h"
 #include "GPIO.h"
-#include "ModbusAddr.h"
+#include "Modbus.h"
 
 /* ----------------------- Defines ------------------------------------------*/
 
@@ -89,7 +90,7 @@ inline void FSM_init(void)
                         uint8_t plug = Reg_PlugCurrent_0 - getAddrReg_ACH(i);
                         RELAY_OFF(plug);
                         InputReg[plug] = st_OverCurrent;
-                        Coil[plug + 1] = false;
+                        Coil[0] &= ~(1 << (plug + Plug_0));
                     }
                     else if (InputReg[getAddrReg_ACH(i)] <= HoldingReg[Param_PlugLowCurrent])
                     {
@@ -99,7 +100,7 @@ inline void FSM_init(void)
                         uint8_t plug = Reg_PlugCurrent_0 - getAddrReg_ACH(i);
                         RELAY_OFF(plug);
                         InputReg[plug] = st_LowCurrent;
-                        Coil[plug + 1] = false;
+                        Coil[0] &= ~(1 << (plug + Plug_0));
                     }
                 }
                 // checking CPU temperature
@@ -116,21 +117,21 @@ inline void FSM_init(void)
                 {
                     if (InputReg[Reg_BoardCurrent] >= Param_SystemOverCurrent)
                     {
-                        FSM_State = Param_SystemOverCurrent;
+                        FSM_State = ST_Protect_SystemOverCurrent;
                         break;
                     }
                 }
             }
+            RELAY_PORT = (Coil[0]<<Plug_0) & ((1<<Reset)-1);
             break;
 
         case ST_ModbusPull:
+            MB_eEvent = EV_READY;
             do
             {
                 MB_ERROR = eMBPoll(&MB_eEvent);
-                _delay_us(10);
-            } while (MB_ERROR == MB_ENOERR && MB_eEvent != EV_FRAME_SENT);
-            MB_ERROR = MB_ENOERR;
-            MB_eEvent = EV_READY;
+                _delay_us(1);
+            } while (MB_ERROR == MB_ENOERR && MB_eEvent != EV_READY);
             FSM_State = ST_Standby;
             break;
 

@@ -3,7 +3,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "ModbusAddr.h"
+#include "Modbus.h"
 
 #define INIT_AN_REG Reg_PlugVoltage
 static const uint8_t Analog_Chanel[] = {5, 4, 0, 1, 2, 3, 6, 7, 8}; // defines the ordered path of ADC readings
