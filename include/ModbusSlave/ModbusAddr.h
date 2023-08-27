@@ -18,7 +18,7 @@
 /**
  * @brief Enumeration to define the coil addresses
  */
-enum AddrCoil
+typedef enum 
 {
     /**
      * @brief this field defines the start of the addresses,
@@ -41,12 +41,12 @@ enum AddrCoil
      * it must not be changed in position@brief
      */
     SIZE_Coil
-};
+}AddrCoil;
 
 /**
  * @brief Enumeration to define the coil addresses
  */
-enum AddrDiscretImput
+typedef enum
 {
     /**
      * @brief this field defines the start of the addresses,
@@ -62,12 +62,12 @@ enum AddrDiscretImput
      * it must not be changed in position@brief
      */
     SIZE_DiscretImput
-};
+}AddrDiscretImput;
 
 /**
  * @brief Enumeration to define the holding registers addresses
  */
-enum AddrHoldingReg
+typedef enum
 {
     /**
      * @brief this field defines the start of the addresses,
@@ -96,12 +96,12 @@ enum AddrHoldingReg
      * it must not be changed in position@brief
      */
     SIZE_HoldingReg
-};
+}AddrHoldingReg;
 
 /**
  * @brief Enumeration to define the input registers addresses
  */
-enum AddrInputReg
+typedef enum
 {
     /**
      * @brief this field defines the start of the addresses,
@@ -134,7 +134,7 @@ enum AddrInputReg
      * it must not be changed in position.
      */
     SIZE_InputReg
-};
+}AddrInputReg;
 
 /*---------------------------------------------------------------------------------------*/
 
@@ -142,7 +142,7 @@ enum AddrInputReg
  * @brief other useful definitions, in this case an enumeration
  *  with the possible states of the status records
  */
-enum PlugState
+typedef enum
 {
     st_Off = 0,
     st_On,
@@ -150,6 +150,6 @@ enum PlugState
     st_LowCurrent,
     st_OverVoltage,
     st_LowVoltage,
-};
+}PlugState;
 
 #endif // !MODBUS_ADDR_H
