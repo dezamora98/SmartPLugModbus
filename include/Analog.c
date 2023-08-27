@@ -1,6 +1,5 @@
-#include <avr/io.h>
 #include <avr/interrupt.h>
-
+#include "Modbus.h"
 #include "Analog.h"
 #include "GPIO.h"
 

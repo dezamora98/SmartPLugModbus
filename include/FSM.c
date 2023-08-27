@@ -2,6 +2,7 @@
 #include "FSM.h"
 #include "Analog.h"
 #include "GPIO.h"
+#include "Modbus.h"
 
 void FSM_init(void)
 {

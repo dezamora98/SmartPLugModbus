@@ -26,8 +26,6 @@
 #include <util/delay.h>
 
 /* ------------------------------ includes ----------------------------------*/
-#include "mb.h"
-#include "mbport.h"
 #include "FSM.h"
 #include "Modbus.h"
 #include "Analog.h"

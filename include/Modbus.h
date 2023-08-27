@@ -2,7 +2,6 @@
 #define MODBUSADDR_H
 
 #include "mb.h"
-#include "mbutils.h"
 
 enum Addr_Coil
 {

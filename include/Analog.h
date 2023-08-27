@@ -1,7 +1,7 @@
 #ifndef ANALOG_H
 #define ANALOG_H
 
-#include "Modbus.h"
+#include <avr/io.h>
 
 const static uint8_t Analog_Chanel[] = {5, 4, 0, 1, 2, 3, 6, 7, 8}; // defines the ordered path of ADC readings
 volatile static uint8_t Analog_Iterator = 0;                        // analog channel iterator
