@@ -25,14 +25,14 @@ enum Addr_HoldingReg
     Param_OverVoltage,
     Param_LowVoltage,
 
+    Param_HighTemperature,
+    Param_SystemOverCurrent,
+    Param_SlaveID,
+
     Param_TimeoutPlugLowCurrent,
     Param_TimeoutPlugOverCurrent,
     Param_TimeoutLowVoltage,
     Param_TimeoutOverVoltage,
-
-    Param_HighTemperature,
-    Param_SystemOverCurrent,
-    Param_SlaveID,
 
     Size_HoldingArray
 };
