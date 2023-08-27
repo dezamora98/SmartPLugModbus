@@ -46,6 +46,5 @@ int main(void)
     AnalogInit();
     eMBInit(MB_RTU, SlaveID, 0, 38400, MB_PAR_NONE);
     eMBEnable();
-
     FSM_init();
 }

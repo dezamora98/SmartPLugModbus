@@ -1,9 +1,13 @@
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
 #include "Analog.h"
+#include "GPIO.h"
 
 ISR(ADC_vect)
 {
     /*saving the channel reading in the corresponding register in MODBUS.*/
-    InputReg[getAddrReg_ACH(Analog_Iterator)] = ADC;
+    ArrayAnalogReg [Analog_Iterator] = ADC;
 
     if (++Analog_Iterator == size_ACH)
     {
@@ -13,7 +17,7 @@ ISR(ADC_vect)
     /*prepares the ADC for the next conversion, if the next channel
      is from the temperature sensor the reference must be set to 1.1V
      otherwise AREF is still used.*/
-    if ((INIT_AN_REG + Analog_Iterator) == Reg_TempMCU)
+    if ((Reg_PlugVoltage + Analog_Iterator) == Reg_TempMCU)
     {
         ADMUX = 1 << REFS0 | 1 << REFS1 | Analog_Chanel[Analog_Iterator];
     }
@@ -67,65 +71,52 @@ void AnalogInit(void)
 
 void AnalogCheck(void)
 {
-    uint8_t plug;
-
-    for (uint8_t i = 0; i < size_ACH; ++i)
+    // checking voltage level and current in system
+    if (PlugVoltage > HoldingReg[Param_OverVoltage])
     {
-        // checking voltage level and current in system
-        if (getAddrReg_ACH(i) == Reg_PlugVoltage)
+        FSM_State = ST_Protect_OverVoltage;
+        return;
+    }
+    if (BoardCurrent > HoldingReg[Param_LowVoltage])
+    {
+        FSM_State = ST_Protect_LowVoltage;
+        return;
+    }
+
+    // checking CPU temperature
+    if (TempMCU >= Param_HighTemperature)
+    {
+        FSM_State = ST_Protect_CriticalTem;
+        return;
+    }
+
+    // checking of current level on main board
+    if (BoardCurrent >= Param_SystemOverCurrent)
+    {
+        FSM_State = ST_Protect_SystemOverCurrent;
+        return;
+    }
+
+    // checking the current in the plugs
+    for (uint8_t i = 0; i < size_ArrayCurrentPlug ; ++i)
+    {
+        if (ArrayCurrentPlug[i] >= PlugOverCurrent)
         {
-            if (InputReg[Reg_PlugVoltage] > HoldingReg[Param_OverVoltage])
-            {
-                FSM_State = ST_Protect_OverVoltage;
-                break;
-            }
-            else if (InputReg[Reg_BoardCurrent] > HoldingReg[Param_LowVoltage])
-            {
-                FSM_State = ST_Protect_LowVoltage;
-                break;
-            }
+            /*include system timeout protect*/
+            /*-> here <-*/
+            /* for testing, the timeout protection will be ignored */
+            RELAY_OFF(i);
+            ArrayPlugState[i] = st_OverCurrent;
+            Coil &= ~(1 << (i+ Plug_0));
         }
-        // checking the current in the plugs
-        else if (getAddrReg_ACH(i) >= Reg_PlugCurrent_0 && getAddrReg_ACH(i) <= Reg_PlugCurrent_5)
+        else if (ArrayCurrentPlug[i] <= PlugLowCurrent)
         {
-            if (InputReg[getAddrReg_ACH(i)] >= HoldingReg[Param_PlugOverCurrent])
-            {
-                /*include system timeout protect*/
-                /*-> here <-*/
-                /* for testing, the timeout protection will be ignored */
-                plug = Reg_PlugCurrent_0 - getAddrReg_ACH(i);
-                RELAY_OFF(plug);
-                InputReg[plug] = st_OverCurrent;
-                Coil[0] &= ~(1 << (plug + Plug_0));
-            }
-            else if (InputReg[getAddrReg_ACH(i)] <= HoldingReg[Param_PlugLowCurrent])
-            {
-                /*include system timeout protect*/
-                /*-> here <-*/
-                /* for testing, the timeout protection will be ignored */
-                plug = Reg_PlugCurrent_0 - getAddrReg_ACH(i);
-                RELAY_OFF(plug);
-                InputReg[plug] = st_LowCurrent;
-                Coil[0] &= ~(1 << (plug + Plug_0));
-            }
-        }
-        // checking CPU temperature
-        else if (getAddrReg_ACH(i) == Reg_PlugVoltage)
-        {
-            if (InputReg[Reg_TempMCU] >= Param_HighTemperature)
-            {
-                FSM_State = ST_Protect_CriticalTem;
-                break;
-            }
-        }
-        // checking of current level on main board
-        else if (getAddrReg_ACH(i) == Reg_BoardCurrent)
-        {
-            if (InputReg[Reg_BoardCurrent] >= Param_SystemOverCurrent)
-            {
-                FSM_State = ST_Protect_SystemOverCurrent;
-                break;
-            }
+            /*include system timeout protect*/
+            /*-> here <-*/
+            /* for testing, the timeout protection will be ignored */
+            RELAY_OFF(i);
+            ArrayPlugState[i] = st_LowCurrent;
+            Coil &= ~(1 << (i+ Plug_0));
         }
     }
 }

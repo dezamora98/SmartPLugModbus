@@ -3,9 +3,6 @@
 
 #include "mb.h"
 #include "mbutils.h"
-#include <avr/io.h>
-#include <avr/eeprom.h>
-#include <stdbool.h>
 
 enum Addr_Coil
 {
@@ -15,7 +12,9 @@ enum Addr_Coil
     Plug_3,
     Plug_4,
     Plug_5,
+
     Reset,
+
     Size_CoilArray
 };
 
@@ -25,13 +24,16 @@ enum Addr_HoldingReg
     Param_PlugLowCurrent,
     Param_OverVoltage,
     Param_LowVoltage,
+
     Param_TimeoutPlugLowCurrent,
     Param_TimeoutPlugOverCurrent,
     Param_TimeoutLowVoltage,
     Param_TimeoutOverVoltage,
+
     Param_HighTemperature,
     Param_SystemOverCurrent,
     Param_SlaveID,
+
     Size_HoldingArray
 };
 
@@ -44,6 +46,7 @@ enum Addr_InputReg
     Reg_PlugState_4,
     Reg_PlugState_5,
 
+    // analog registers
     Reg_PlugVoltage,
     Reg_BoardCurrent,
     Reg_PlugCurrent_0,
@@ -53,6 +56,7 @@ enum Addr_InputReg
     Reg_PlugCurrent_4,
     Reg_PlugCurrent_5,
     Reg_TempMCU,
+
     Size_InputArray
 };
 
@@ -69,11 +73,40 @@ enum PlugState
 /**
  * the expression @code Size_CoilArray + 7) / 8 ensures rounding for the required number of bytes of the array
  **/
-volatile uint8_t Coil[(Size_CoilArray + 7) / 8];
+// volatile uint8_t Coil[(Size_CoilArray + 7) / 8];
+volatile uint8_t Coil;
 volatile uint16_t HoldingReg[Size_HoldingArray];
 volatile uint16_t InputReg[Size_InputArray];
 
+#define PlugOverCurrent HoldingReg[Param_PlugOverCurrent]
+#define PlugLowCurrent HoldingReg[Param_PlugLowCurrent]
+#define OverVoltage HoldingReg[Param_OverVoltage]
+#define LowVoltage HoldingReg[Param_LowVoltage]
+#define TimeoutPlugLowCurrent HoldingReg[Param_TimeoutPlugLowCurrent]
+#define TimeoutPlugOverCurrent HoldingReg[Param_TimeoutPlugOverCurrent]
+#define TimeoutLowVoltage HoldingReg[Param_TimeoutLowVoltage]
+#define TimeoutOverVoltage HoldingReg[Param_TimeoutOverVoltage]
+#define HighTemperature HoldingReg[Param_HighTemperature]
+#define SystemOverCurrent HoldingReg[Param_SystemOverCurrent]
+//#define SlaveID HoldingReg[Param_SlaveID]
+
+#define ArrayAnalogReg (InputReg + Reg_PlugVoltage)
+#define size_ArrayAnalogReg (Reg_PlugCurrent_5 - Reg_PlugVoltage + 1)
+
+#define ArrayCurrentPlug (InputReg + Reg_PlugCurrent_0)
+#define size_ArrayCurrentPlug (Reg_PlugCurrent_5 - Reg_PlugCurrent_0 + 1)
+
+#define ArrayPlugState (InputReg + Reg_PlugState_0)
+#define size_ArrayPlugState (Reg_PlugState_5 - Reg_PlugState_0 + 1)
+
+#define PlugVoltage InputReg[Reg_PlugVoltage]
+#define BoardCurrent InputReg[Reg_BoardCurrent]
+#define TempMCU InputReg[Reg_TempMCU]
+#define BoardCurrent InputReg[Reg_BoardCurrent]
+
 #define SlaveID 0x01
+
+void ModbusPoll(void);
 
 eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,
                              USHORT usNRegs, eMBRegisterMode eMode);
@@ -82,7 +115,7 @@ eMBErrorCode eMBRegInputCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNRegs
 
 eMBErrorCode eMBRegCoilsCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNCoils,
                            eMBRegisterMode eMode);
-                           
+
 eMBErrorCode eMBRegDiscreteCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNDiscrete);
 
 #endif // !MODBUSADDR_H

@@ -1,4 +1,5 @@
 #include "GPIO.h"
+#include "Modbus.h"
 
 inline void GPIOInit(void)
 {
@@ -15,4 +16,9 @@ inline void GPIOInit(void)
     COM_PORT_DDR = 1 << MODBUS_TX | 1 << MODBUS_RTS |
                    1 << SOFT_MOSI | 1 << SOFT_SCK |
                    1 << SOFT_SS0 | 1 << SOFT_SS1;
+}
+
+void GPIOUpdate(void)
+{
+    RELAY_PORT = (Coil<<Plug_0) & ((1<<Reset)-1);
 }

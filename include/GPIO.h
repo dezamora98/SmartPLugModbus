@@ -26,8 +26,13 @@
 #define RELAY_OFF(n) RELAY_PORT |= 1 << n
 
 /**
- * @brief GPIO configuration
- *
+ * @brief this function initializes the system GPIOs
  **/
 void GPIOInit(void);
+
+/**
+ * @brief this function consists of updating the relay 
+ * outputs according to the values of the coils.
+ **/
+void GPIOUpdate(void);
 #endif // !GPIO_H
