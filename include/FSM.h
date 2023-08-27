@@ -13,7 +13,9 @@ enum
     ST_Protect_SystemOverCurrent
 };
 
-/* ----------------------- Static variables ---------------------------------*/
 volatile uint8_t FSM_State;
+volatile uint8_t FSM_LastState;
+
+void FSM_init(void);
 
 #endif

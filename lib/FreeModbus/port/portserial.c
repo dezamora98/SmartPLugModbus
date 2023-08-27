@@ -150,6 +150,10 @@ ISR(SIG_USART_DATA)
 
 ISR(SIG_USART_RECV)
 {
+    if(FSM_State != ST_ModbusPull)
+    {
+        FSM_LastState = FSM_State;
+    }
     FSM_State = ST_ModbusPull;
     pxMBFrameCBByteReceived();
 }
