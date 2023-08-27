@@ -7,7 +7,7 @@
 ISR(ADC_vect)
 {
     /*saving the channel reading in the corresponding register in MODBUS.*/
-    ArrayAnalogReg [Analog_Iterator] = ADC;
+    ArrayAnalogReg[Analog_Iterator] = ADC;
 
     if (++Analog_Iterator == size_ACH)
     {
@@ -30,16 +30,6 @@ ISR(ADC_vect)
     ADCSRA |= 1 << ADSC;
 }
 
-/**
- * @brief Initializes analog tasks:
- *
- * This function sets the ADC to 125kHz according
- * to the CPU working frequency (F_CPU). This guarantees
- * an ADC response time of approximately 100uS; therefore,
- * if 10 consecutive channels are polled, an update time of
- * approximately 1ms is achieved.
- *
- **/
 void AnalogInit(void)
 {
     /* Disable the digital inputs to reduce power
@@ -71,34 +61,52 @@ void AnalogInit(void)
 
 void AnalogCheck(void)
 {
-    // checking voltage level and current in system
-    if (PlugVoltage > HoldingReg[Param_OverVoltage])
+    // checking voltage level (OverVoltage)
+    if (PlugVoltage > OverVoltage)
     {
+        /*include system timeout protect*/
+        /*-> here <-*/
+        /* for testing, the timeout protection will be ignored */
+        RELAY_PORT = ALL_OFF;
         FSM_State = ST_Protect_OverVoltage;
         return;
     }
-    if (BoardCurrent > HoldingReg[Param_LowVoltage])
+
+    // checking voltage level (LowVoltage)
+    if (PlugVoltage < LowVoltage)
     {
+        /*include system timeout protect*/
+        /*-> here <-*/
+        /* for testing, the timeout protection will be ignored */
+        RELAY_PORT = ALL_OFF;
         FSM_State = ST_Protect_LowVoltage;
         return;
     }
 
     // checking CPU temperature
-    if (TempMCU >= Param_HighTemperature)
+    if (TempMCU > HighTemperature)
     {
+        /*include system timeout protect*/
+        /*-> here <-*/
+        /* for testing, the timeout protection will be ignored */
+        RELAY_PORT = ALL_OFF;
         FSM_State = ST_Protect_CriticalTem;
         return;
     }
 
     // checking of current level on main board
-    if (BoardCurrent >= Param_SystemOverCurrent)
+    if (BoardCurrent > SystemOverCurrent)
     {
+        /*include system timeout protect*/
+        /*-> here <-*/
+        /* for testing, the timeout protection will be ignored */
+        RELAY_PORT = ALL_OFF;
         FSM_State = ST_Protect_SystemOverCurrent;
         return;
     }
 
     // checking the current in the plugs
-    for (uint8_t i = 0; i < size_ArrayCurrentPlug ; ++i)
+    for (uint8_t i = 0; i < size_ArrayCurrentPlug; ++i)
     {
         if (ArrayCurrentPlug[i] >= PlugOverCurrent)
         {
@@ -107,7 +115,7 @@ void AnalogCheck(void)
             /* for testing, the timeout protection will be ignored */
             RELAY_OFF(i);
             ArrayPlugState[i] = st_OverCurrent;
-            Coil &= ~(1 << (i+ Plug_0));
+            Coil &= ~(1 << (i + Plug_0));
         }
         else if (ArrayCurrentPlug[i] <= PlugLowCurrent)
         {
@@ -116,7 +124,7 @@ void AnalogCheck(void)
             /* for testing, the timeout protection will be ignored */
             RELAY_OFF(i);
             ArrayPlugState[i] = st_LowCurrent;
-            Coil &= ~(1 << (i+ Plug_0));
+            Coil &= ~(1 << (i + Plug_0));
         }
     }
 }

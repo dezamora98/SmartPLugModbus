@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdlib.h>
 #include "FSM.h"
 #include "Analog.h"
 #include "GPIO.h"
