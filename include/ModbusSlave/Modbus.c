@@ -20,7 +20,7 @@ eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,
                              USHORT usNRegs, eMBRegisterMode eMode)
 {
 
-    if ((usAddress + usNRegs) > Size_HoldingArray)
+    if ((usAddress + usNRegs) > SIZE_HoldingReg)
     {
         return MB_ENOREG;
     }
@@ -30,15 +30,15 @@ eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,
     case MB_REG_READ:
         for (uint8_t i = 0; i < usNRegs; ++i)
         {
-            pucRegBuffer[i * 2 + 0] = (uint8_t)(HoldingReg[i + usAddress] >> 8);
-            pucRegBuffer[i * 2 + 1] = (uint8_t)(HoldingReg[i + usAddress] & 0xFF);
+            pucRegBuffer[i * 2 + 0] = (uint8_t)(HoldingReg.Array[i + usAddress] >> 8);
+            pucRegBuffer[i * 2 + 1] = (uint8_t)(HoldingReg.Array[i + usAddress] & 0xFF);
         }
         break;
 
     case MB_REG_WRITE:
         for (uint8_t i = 0; i < usNRegs; ++i)
         {
-            HoldingReg[i + usAddress] = (pucRegBuffer[i * 2 + 0] << 8) | pucRegBuffer[i * 2 + 1];
+            HoldingReg.Array[i + usAddress] = (pucRegBuffer[i * 2 + 0] << 8) | pucRegBuffer[i * 2 + 1];
         }
         break;
 
@@ -51,14 +51,14 @@ eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,
 
 eMBErrorCode eMBRegInputCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNRegs)
 {
-    if ((usAddress + usNRegs) > Size_InputArray)
+    if ((usAddress + usNRegs) > SIZE_InputReg)
     {
         return MB_ENOREG;
     }
     for (uint8_t i = 0; i < usNRegs; ++i)
     {
-        pucRegBuffer[i * 2 + 0] = (uint8_t)(InputReg[i + usAddress] >> 8);
-        pucRegBuffer[i * 2 + 1] = (uint8_t)(InputReg[i + usAddress] & 0xFF);
+        pucRegBuffer[i * 2 + 0] = (uint8_t)(InputReg.Array[i + usAddress] >> 8);
+        pucRegBuffer[i * 2 + 1] = (uint8_t)(InputReg.Array[i + usAddress] & 0xFF);
     }
     return MB_ENOERR;
 }
@@ -67,7 +67,7 @@ eMBErrorCode eMBRegCoilsCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNCoil
                            eMBRegisterMode eMode)
 {
     /* Check if we have registers mapped at this block. */
-    if ((usAddress + usNCoils) > Size_CoilArray)
+    if ((usAddress + usNCoils) > SIZE_Coil)
     {
         return MB_ENOREG;
     }
@@ -77,12 +77,12 @@ eMBErrorCode eMBRegCoilsCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNCoil
         {
             /* Read current values and pass to protocol stack. */
         case MB_REG_READ:
-            *pucRegBuffer = (Coil >> usAddress) & ((1 << usNCoils) - 1);
+            *pucRegBuffer = (Coil.Array[0] >> usAddress) & ((1 << usNCoils) - 1);
             break;
 
             /* Update current register values. */
         case MB_REG_WRITE:
-            Coil = (Coil & ~(((1 << usNCoils) - 1) << usAddress)) |
+            Coil.Array[0] = (Coil.Array[0] & ~(((1 << usNCoils) - 1) << usAddress)) |
                       ((*pucRegBuffer << usAddress) & (((1 << usNCoils) - 1) << usAddress));
             break;
 

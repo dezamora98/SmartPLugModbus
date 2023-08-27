@@ -1,5 +1,5 @@
 #include "GPIO.h"
-#include "Modbus.h"
+#include "ModbusSlave/Modbus.h"
 
 inline void GPIOInit(void)
 {
@@ -20,5 +20,5 @@ inline void GPIOInit(void)
 
 void GPIOUpdate(void)
 {
-    RELAY_PORT = (Coil<<Plug_0) & ((1<<Reset)-1);
+    RELAY_PORT = (Coil.Array[0]<<ADDR_Plug_0) & ((1<<ADDR_Reset)-1);
 }

@@ -27,7 +27,7 @@
 
 /* ------------------------------ includes ----------------------------------*/
 #include "FSM.h"
-#include "Modbus.h"
+#include "ModbusSlave/Modbus.h"
 #include "Analog.h"
 #include "GPIO.h"
 

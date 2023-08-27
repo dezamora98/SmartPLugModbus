@@ -2,7 +2,7 @@
 #include "FSM.h"
 #include "Analog.h"
 #include "GPIO.h"
-#include "Modbus.h"
+#include "ModbusSlave/Modbus.h"
 
 void FSM_init(void)
 {
@@ -11,7 +11,7 @@ void FSM_init(void)
         switch (FSM_State)
         {
         case ST_Standby:
-            AnalogCheck();
+            //AnalogCheck();
             GPIOUpdate();
             break;
 
