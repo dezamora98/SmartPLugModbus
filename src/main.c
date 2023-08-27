@@ -30,7 +30,6 @@
 #include "ModbusSlave/Modbus.h"
 #include "Analog.h"
 #include "GPIO.h"
-
 /* ----------------------- Defines ------------------------------------------*/
 
 /* ----------------------- Static variables ---------------------------------*/
