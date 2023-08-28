@@ -4,12 +4,13 @@
 #include "mb.h"
 #include "ModbusStruct.h"
 
-#define SlaveID 0x01
-
 t_HoldingReg HoldingReg;
 t_InputReg InputReg;
 t_Coil Coil; 
 
+/**
+ * @brief Function for polling the modbus stack
+ */
 void ModbusPoll(void);
 
 eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,

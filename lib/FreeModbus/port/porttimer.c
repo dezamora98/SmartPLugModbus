@@ -90,5 +90,10 @@ vMBPortTimersDisable(  )
 
 ISR( TIMER1_COMPA_vect  )
 {
+    if(FSM_State != ST_ModbusPull)
+    {
+        FSM_LastState = FSM_State;
+    }
+    FSM_State = ST_ModbusPull;
     ( void )pxMBPortCBTimerExpired(  );
 }

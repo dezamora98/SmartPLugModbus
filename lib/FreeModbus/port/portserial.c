@@ -145,6 +145,11 @@ BOOL xMBPortSerialGetByte(CHAR *pucByte)
 
 ISR(SIG_USART_DATA)
 {
+    if(FSM_State != ST_ModbusPull)
+    {
+        FSM_LastState = FSM_State;
+    }
+    FSM_State = ST_ModbusPull;
     pxMBFrameCBTransmitterEmpty();
 }
 

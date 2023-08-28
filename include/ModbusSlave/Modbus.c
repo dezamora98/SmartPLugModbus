@@ -8,12 +8,13 @@ void ModbusPoll(void)
 {
     eMBEventType MB_eEvent = EV_READY;
     eMBErrorCode MB_ERROR;
-    do
+
+    MB_ERROR = eMBPoll(&MB_eEvent);
+
+    if (MB_ERROR != MB_ENOERR || MB_eEvent == EV_READY || MB_eEvent == EV_FRAME_SENT)
     {
-        MB_ERROR = eMBPoll(&MB_eEvent);
-        _delay_us(1);
-    } while (MB_ERROR == MB_ENOERR && MB_eEvent != EV_READY);
-    FSM_State = FSM_LastState;
+        FSM_State = FSM_LastState;
+    }    
 }
 
 eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,
@@ -83,7 +84,7 @@ eMBErrorCode eMBRegCoilsCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNCoil
             /* Update current register values. */
         case MB_REG_WRITE:
             Coil.Array[0] = (Coil.Array[0] & ~(((1 << usNCoils) - 1) << usAddress)) |
-                      ((*pucRegBuffer << usAddress) & (((1 << usNCoils) - 1) << usAddress));
+                            ((*pucRegBuffer << usAddress) & (((1 << usNCoils) - 1) << usAddress));
             break;
 
         default:

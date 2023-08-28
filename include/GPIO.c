@@ -20,5 +20,5 @@ inline void GPIOInit(void)
 
 void GPIOUpdate(void)
 {
-    RELAY_PORT = (Coil.Array[0]<<ADDR_Plug_0) & ((1<<ADDR_Reset)-1);
+    RELAY_PORT = Coil.Array[0] & 0x3F;
 }

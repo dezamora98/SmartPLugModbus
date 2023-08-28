@@ -1,11 +1,26 @@
+/**
+ * @file Analog.h
+ * @author Daniel Enrique Zamora Sifredo (dezamora98@gmail.com)
+ * 
+ * @brief this file is used to generate prototypes of the functions
+ * required in the SmartPlugModbus analog tasks.
+ * 
+ * @version 0.1
+ * @date 2023-08-27
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #ifndef ANALOG_H
 #define ANALOG_H
 
 #include <avr/io.h>
 
-const static uint8_t Analog_Chanel[] = {5, 4, 0, 1, 2, 3, 6, 7, 8}; // defines the ordered path of ADC readings
-volatile static uint8_t Analog_Iterator = 0;                        // analog channel iterator
-#define size_ACH sizeof(Analog_Chanel) / sizeof(Analog_Chanel[0])   // number of analog channels
+/// @brief defines the ordered path of ADC readings
+const static uint8_t Analog_Chanel[] = {5, 4, 0, 1, 2, 3, 6, 7, 8};
+
+/// @brief analog channel iterator
+volatile static uint8_t Analog_Iterator = 0;
 
 /**
  * @brief Initializes analog tasks:
