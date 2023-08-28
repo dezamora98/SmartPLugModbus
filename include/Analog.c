@@ -8,7 +8,7 @@ ISR(ADC_vect)
     /*saving the channel reading in the corresponding register in MODBUS.*/
     InputReg.AnalogReg[Analog_Iterator] = ADC;
 
-    if (++Analog_Iterator == sizeof(InputReg.AnalogReg)/sizeof(uint16_t))
+    if (++Analog_Iterator == sizeof(InputReg.AnalogReg) / sizeof(uint16_t))
     {
         Analog_Iterator = 0;
     }
@@ -16,17 +16,25 @@ ISR(ADC_vect)
     /*prepares the ADC for the next conversion, if the next channel
      is from the temperature sensor the reference must be set to 1.1V
      otherwise AREF is still used.*/
-    if (Analog_Iterator == (ADDR_Reg_TempMCU-ADDR_Reg_PlugVoltage))
+    if (Analog_Chanel[Analog_Iterator] == 8)
     {
-        ADMUX = 1 << REFS0 | 1 << REFS1 | Analog_Chanel[Analog_Iterator];
+        ADMUX = (1 << REFS0) | (1 << REFS1) | Analog_Chanel[Analog_Iterator];
     }
     else
     {
-        ADMUX = 1 << REFS0 | Analog_Chanel[Analog_Iterator];
+        /**
+         * @brief using a 5v or 3.3v reference greatly affects the accuracy of
+         * the adc when changing the reference for the integrated temperature sensor.
+         */
+#ifdef INT_REF_11
+        ADMUX = (1 << REFS0) | (1 << REFS1) | Analog_Chanel[Analog_Iterator];
+#else
+        ADMUX = (1 << REFS0) | Analog_Chanel[Analog_Iterator];
+#endif // !INT_REF_11
     }
 
     /* start new conversion */
-    ADCSRA |= 1 << ADSC;
+    ADCSRA |= (1 << ADSC);
 }
 
 void AnalogInit(void)
@@ -36,7 +44,7 @@ void AnalogInit(void)
     DIDR0 = 0xff;
 
     Analog_Iterator = 0;
-    ADMUX = 1 << REFS0 | Analog_Chanel[Analog_Iterator];
+    ADMUX = (1 << REFS0)  | Analog_Chanel[Analog_Iterator];
 
 /* Set the ADC prescaler for 125 kHz */
 #if F_CPU == 16000000UL
@@ -56,6 +64,7 @@ void AnalogInit(void)
 
     /* start init conversion */
     ADCSRA |= 1 << ADSC;
+    sei();
 }
 
 void AnalogCheck(void)
@@ -105,7 +114,7 @@ void AnalogCheck(void)
     }
 
     // checking the current in the plugs
-    for (uint8_t i = 0; i < sizeof(InputReg.PlugCurrent)/sizeof(uint16_t); ++i)
+    for (uint8_t i = 0; i < sizeof(InputReg.PlugCurrent) / sizeof(uint16_t); ++i)
     {
         if (InputReg.PlugCurrent[i] >= HoldingReg.PlugOverCurrent)
         {
