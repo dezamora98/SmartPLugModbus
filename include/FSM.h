@@ -3,7 +3,7 @@
 
 #include <avr/io.h>
 
-enum
+typedef enum
 {
     ST_Standby = 0,
     ST_ModbusPull,
@@ -11,11 +11,13 @@ enum
     ST_Protect_OverVoltage,
     ST_Protect_LowVoltage,
     ST_Protect_SystemOverCurrent
-};
+}state;
 
-volatile uint8_t FSM_State;
-volatile uint8_t FSM_LastState;
+volatile state FSM_State;
+volatile state FSM_LastState;
 
+void ResetCheck(void);
+void setProtect(state st);
 void FSM_init(void);
 
 #endif

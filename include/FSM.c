@@ -7,6 +7,29 @@
 #include "EEPROM_Param.h"
 #include <string.h>
 
+inline void ResetCheck(void)
+{
+    if ((Coil.Array[InitAddr_Coil] & (1 << (ADDR_Reset))) != 0)
+    {
+        Coil.Array[InitAddr_Coil] = 0;
+        if (!ParamCheck())
+        {
+            UpdatePersistentParam();
+        }
+        wdt_enable(WDTO_15MS);
+        while (true)
+            ;
+    }
+}
+
+void setProtect(state st)
+{
+    RELAY_PORT = ALL_OFF;
+    memset(InputReg.PlugState, st, sizeof(InputReg.PlugState));
+    InputReg.SystemState = st;
+}
+
+
 void FSM_init(void)
 {
     while (true)
@@ -14,20 +37,8 @@ void FSM_init(void)
         switch (FSM_State)
         {
         case ST_Standby:
-            // AnalogCheck();
+            AnalogCheck();
             GPIOUpdate();
-
-            if ((Coil.Array[0] & (1 << (ADDR_Reset))) != 0)
-            {
-                Coil.Array[0] = 0;
-                if (!ParamCheck())
-                {
-                    UpdatePersistentParam();
-                }
-                wdt_enable(WDTO_15MS);
-                while (true)
-                    ;
-            }
             break;
 
         case ST_ModbusPull:
@@ -35,25 +46,25 @@ void FSM_init(void)
             break;
 
         case ST_Protect_OverVoltage:
-            RELAY_PORT = ALL_OFF;
+            setProtect(st_OverVoltage);
             break;
 
         case ST_Protect_LowVoltage:
-            RELAY_PORT = ALL_OFF;
+            setProtect(st_LowVoltage);
             break;
 
         case ST_Protect_CriticalTem:
-            RELAY_PORT = ALL_OFF;
+            setProtect(st_HighTemterature);
             break;
 
         case ST_Protect_SystemOverCurrent:
-            RELAY_PORT = ALL_OFF;
+            setProtect(st_SystemOverCurrent);
             break;
 
         default:
-            RELAY_PORT = ALL_OFF;
-            /*System ERROR*/
+            setProtect(st_UndefinedError);
             break;
         }
+        ResetCheck();
     }
 }

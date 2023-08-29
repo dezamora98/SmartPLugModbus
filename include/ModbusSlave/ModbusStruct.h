@@ -14,18 +14,18 @@
  * @example this example shows the basic way of forming the
  * data structures of the slave's Modbus stack:
  * @code
- * 
+ *
  * typedef struct
  * {
  *     uint8_t Array[(SIZE_Coil + 7) / 8];
  * } t_Coil;
- * 
+ *
  * typedef struct
  * {
  *     uint8_t Array[(SIZE_DiscreteInput + 7) / 8];
  * } t_DiscreteInput;
- * 
- * 
+ *
+ *
  * typedef struct
  * {
  *     union
@@ -34,7 +34,7 @@
  *         // variables contained in the array in an ordered form
  *     };
  * } t_HoldingReg;
- * 
+ *
  * typedef struct
  * {
  *     union
@@ -43,7 +43,7 @@
  *         // variables contained in the array in an ordered form
  *     };
  * } t_InputReg;
- * 
+ *
  * @endcond
  */
 
@@ -90,6 +90,8 @@ typedef struct
             uint16_t TimeoutLowVoltage;
             /// @brief timeout for overvoltage protect action
             uint16_t TimeoutOverVoltage;
+            /// @brief timeout for high temperature protect action
+            uint16_t TimeoutHighTemperature;
         };
     };
 } t_HoldingReg;
@@ -103,20 +105,21 @@ typedef struct
         ///@brief user arrays or variables,must be defined in the same order of the addresse
         struct
         {
+            uint16_t SystemState;
             ///@brief Array for the status of all plugs
             uint16_t PlugState[ADDR_Reg_PlugState_5 - ADDR_Reg_PlugState_0 + 1];
             union
             {
                 ///@brief Array for all analog registers
-                uint16_t AnalogReg[ADDR_Reg_TempMCU - ADDR_Reg_PlugVoltage + 1];
+                uint16_t AnalogReg[ADDR_Reg_TempMCU - ADDR_Reg_PlugCurrent_0 + 1];
                 struct
                 {
-                    ///@brief Line voltage
-                    uint16_t PlugVoltage;
-                    ///@brief Power consumption of the main board
-                    uint16_t BoardCurrent;
                     /// @brief Array for current consumption of all plugs
                     uint16_t PlugCurrent[ADDR_Reg_PlugCurrent_5 - ADDR_Reg_PlugCurrent_0];
+                    /// @brief Line voltage
+                    uint16_t Voltage;
+                    /// @brief Power consumption of the main board
+                    uint16_t BoardCurrent;
                     /// @brief MCU temperature
                     uint16_t TempMCU;
                 };
@@ -124,5 +127,7 @@ typedef struct
         };
     };
 } t_InputReg;
+
+/*****************************************************************************************************/
 
 #endif // !MODBUS_STRUCT_H

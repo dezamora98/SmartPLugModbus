@@ -10,14 +10,14 @@
  */
 #include <avr/io.h>
 #include <util/delay.h>
-
+#include <avr/wdt.h>
 
 #include "FSM.h"
 #include "ModbusSlave/Modbus.h"
 #include "Analog.h"
 #include "GPIO.h"
 #include "EEPROM_Param.h"
-#include <avr/wdt.h>
+#include "Timer.h"
 
 
 int main(void)
@@ -25,6 +25,7 @@ int main(void)
     wdt_disable();
     GPIOInit();
     AnalogInit();
+    TimerInit();
     UpdateVolatileParam();
     eMBInit(MB_RTU, HoldingReg.SlaveID, 0, 38400, MB_PAR_NONE);
     eMBEnable();

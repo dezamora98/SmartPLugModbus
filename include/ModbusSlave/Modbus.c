@@ -78,12 +78,12 @@ eMBErrorCode eMBRegCoilsCB(UCHAR *pucRegBuffer, USHORT usAddress, USHORT usNCoil
         {
             /* Read current values and pass to protocol stack. */
         case MB_REG_READ:
-            *pucRegBuffer = (Coil.Array[0] >> usAddress) & ((1 << usNCoils) - 1);
+            *pucRegBuffer = (Coil.Array[InitAddr_Coil] >> usAddress) & ((1 << usNCoils) - 1);
             break;
 
             /* Update current register values. */
         case MB_REG_WRITE:
-            Coil.Array[0] = (Coil.Array[0] & ~(((1 << usNCoils) - 1) << usAddress)) |
+            Coil.Array[InitAddr_Coil] = (Coil.Array[InitAddr_Coil] & ~(((1 << usNCoils) - 1) << usAddress)) |
                             ((*pucRegBuffer << usAddress) & (((1 << usNCoils) - 1) << usAddress));
             break;
 

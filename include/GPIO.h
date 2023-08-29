@@ -34,5 +34,7 @@ void GPIOInit(void);
  * @brief this function consists of updating the relay 
  * outputs according to the values of the coils.
  **/
-void GPIOUpdate(void);
+#define GPIOUpdate()  RELAY_PORT = Coil.Array[InitAddr_Coil] & 0x3f
+#define CoilUpdate() Coil.Array[InitAddr_Coil] = Coil.Array[InitAddr_Coil]  & (RELAY_PORT | 0xc0)
+ 
 #endif // !GPIO_H

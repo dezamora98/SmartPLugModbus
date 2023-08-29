@@ -2,6 +2,7 @@
 #include "ModbusSlave/Modbus.h"
 #include "Analog.h"
 #include "GPIO.h"
+#include "Timer.h"
 
 ISR(ADC_vect)
 {
@@ -44,7 +45,7 @@ void AnalogInit(void)
     DIDR0 = 0xff;
 
     Analog_Iterator = 0;
-    ADMUX = (1 << REFS0)  | Analog_Chanel[Analog_Iterator];
+    ADMUX = (1 << REFS0) | Analog_Chanel[Analog_Iterator];
 
 /* Set the ADC prescaler for 125 kHz */
 #if F_CPU == 16000000UL
@@ -69,70 +70,112 @@ void AnalogInit(void)
 
 void AnalogCheck(void)
 {
-    // checking voltage level (OverVoltage)
-    if (InputReg.PlugVoltage > HoldingReg.OverVoltage)
+    t_SPMEvent SPMEvent;
+    // checking voltage level (OverVoltage or LowVoltage)
+    if (InputReg.Voltage >= HoldingReg.OverVoltage || InputReg.Voltage <= HoldingReg.LowVoltage)
     {
-        /*include system timeout protect*/
-        /*-> here <-*/
-        /* for testing, the timeout protection will be ignored */
-        RELAY_PORT = ALL_OFF;
-        FSM_State = ST_Protect_OverVoltage;
-        return;
+        if (!SPMEvent.Voltage.EN)
+        {
+            if (InputReg.Voltage >= HoldingReg.OverVoltage)
+                TimerTic(&SPMEvent.Voltage, HoldingReg.TimeoutOverVoltage, micro);
+            else
+                TimerTic(&SPMEvent.Voltage, HoldingReg.TimeoutLowVoltage, micro);
+        }
+        else
+        {
+            if (InputReg.Voltage >= HoldingReg.OverVoltage)
+            {
+                if (!TimerToc(&SPMEvent.Voltage, HoldingReg.TimeoutOverVoltage, micro))
+                {
+                    RELAY_PORT = ALL_OFF;
+                    FSM_State = ST_Protect_OverVoltage;
+                    return;
+                }
+            }
+            else if (!TimerToc(&SPMEvent.Voltage, HoldingReg.TimeoutLowVoltage, micro))
+            {
+                RELAY_PORT = ALL_OFF;
+                FSM_State = ST_Protect_OverVoltage;
+                return;
+            }
+        }
     }
-
-    // checking voltage level (LowVoltage)
-    if (InputReg.PlugVoltage < HoldingReg.LowVoltage)
+    else
     {
-        /*include system timeout protect*/
-        /*-> here <-*/
-        /* for testing, the timeout protection will be ignored */
-        RELAY_PORT = ALL_OFF;
-        FSM_State = ST_Protect_LowVoltage;
-        return;
-    }
-
-    // checking CPU temperature
-    if (InputReg.TempMCU > HoldingReg.HighTemperature)
-    {
-        /*include system timeout protect*/
-        /*-> here <-*/
-        /* for testing, the timeout protection will be ignored */
-        RELAY_PORT = ALL_OFF;
-        FSM_State = ST_Protect_CriticalTem;
-        return;
+        SPMEvent.Voltage.EN = false;
     }
 
     // checking of current level on main board
-    if (InputReg.BoardCurrent > HoldingReg.SystemOverCurrent)
+    if (InputReg.BoardCurrent >= HoldingReg.SystemOverCurrent)
     {
-        /*include system timeout protect*/
-        /*-> here <-*/
-        /* for testing, the timeout protection will be ignored */
-        RELAY_PORT = ALL_OFF;
-        FSM_State = ST_Protect_SystemOverCurrent;
-        return;
+        if (!SPMEvent.BoardCurrent.EN)
+        {
+            TimerTic(&SPMEvent.BoardCurrent, HoldingReg.SystemOverCurrent, micro);
+        }
+        else if (!TimerToc(&SPMEvent.BoardCurrent, HoldingReg.SystemOverCurrent, micro))
+        {
+            RELAY_PORT = ALL_OFF;
+            FSM_State = ST_Protect_SystemOverCurrent;
+            return;
+        }
+    }
+    else
+    {
+        SPMEvent.BoardCurrent.EN = false;
+    }
+
+    // checking CPU temperature
+    if (InputReg.TempMCU >= HoldingReg.HighTemperature)
+    {
+        if (!SPMEvent.TempMCU.EN)
+        {
+            TimerTic(&SPMEvent.TempMCU, HoldingReg.TimeoutHighTemperature, mili);
+        }
+        else if (!TimerToc(&SPMEvent.TempMCU, HoldingReg.TimeoutHighTemperature, mili))
+        {
+            RELAY_PORT = ALL_OFF;
+            FSM_State = ST_Protect_CriticalTem;
+            return;
+        }
+    }
+    else
+    {
+        SPMEvent.TempMCU.EN = false;
     }
 
     // checking the current in the plugs
-    for (uint8_t i = 0; i < sizeof(InputReg.PlugCurrent) / sizeof(uint16_t); ++i)
+    for (uint8_t i = 0; i < sizeof_array(InputReg.PlugCurrent); ++i)
     {
         if (InputReg.PlugCurrent[i] >= HoldingReg.PlugOverCurrent)
         {
-            /*include system timeout protect*/
-            /*-> here <-*/
-            /* for testing, the timeout protection will be ignored */
-            RELAY_OFF(i);
-            InputReg.PlugState[i] = st_OverCurrent;
-            Coil.Array[0] &= ~(1 << (i + ADDR_Plug_0));
+            if (!SPMEvent.PlugCurrent[i].EN)
+            {
+                TimerTic(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugOverCurrent, micro);
+            }
+            else if (!TimerToc(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugOverCurrent, micro))
+            {
+                RELAY_OFF(i);
+                InputReg.PlugState[i] = st_OverCurrent;
+                Coil.Array[InitAddr_Coil] &= ~(1 << (i + ADDR_Plug_0));
+            }
         }
         else if (InputReg.PlugCurrent[i] <= HoldingReg.PlugLowCurrent)
         {
-            /*include system timeout protect*/
-            /*-> here <-*/
-            /* for testing, the timeout protection will be ignored */
-            RELAY_OFF(i);
-            InputReg.PlugState[i] = st_LowCurrent;
-            Coil.Array[0] &= ~(1 << (i + ADDR_Plug_0));
+            if (!SPMEvent.PlugCurrent[i].EN)
+            {
+                TimerTic(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugLowCurrent, mili);
+            }
+            else if (!TimerToc(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugLowCurrent, mili))
+            {
+                RELAY_OFF(i);
+                InputReg.PlugState[i] = st_LowCurrent;
+                Coil.Array[InitAddr_Coil] &= ~(1 << (i + ADDR_Plug_0));
+            }
+        }
+        else
+        {
+            SPMEvent.PlugCurrent[i].EN = false;
         }
     }
+    CheckTimerEvent(&SPMEvent);
 }

@@ -15,10 +15,13 @@
 
 #include <ctype.h>
 
+
+#define sizeof_array(array) sizeof(array) / sizeof(array[0])
+
 /**
  * @brief Enumeration to define the coil addresses
  */
-typedef enum 
+typedef enum
 {
     /**
      * @brief this field defines the start of the addresses,
@@ -41,7 +44,7 @@ typedef enum
      * it must not be changed in position@brief
      */
     SIZE_Coil
-}AddrCoil;
+} AddrCoil;
 
 /**
  * @brief Enumeration to define the coil addresses
@@ -62,7 +65,7 @@ typedef enum
      * it must not be changed in position@brief
      */
     SIZE_DiscretImput
-}AddrDiscretImput;
+} AddrDiscretImput;
 
 /**
  * @brief Enumeration to define the holding registers addresses
@@ -89,6 +92,7 @@ typedef enum
     ADDR_Param_TimeoutPlugOverCurrent,
     ADDR_Param_TimeoutLowVoltage,
     ADDR_Param_TimeoutOverVoltage,
+    ADDR_Param_TimeoutHighTemperature,
     /*End User definitions*/
 
     /**
@@ -96,7 +100,7 @@ typedef enum
      * it must not be changed in position@brief
      */
     SIZE_HoldingReg
-}AddrHoldingReg;
+} AddrHoldingReg;
 
 /**
  * @brief Enumeration to define the input registers addresses
@@ -110,7 +114,8 @@ typedef enum
     InitAddr_InputReg = 0,
 
     /*User definitions*/
-    ADDR_Reg_PlugState_0 = InitAddr_InputReg,
+    ADDR_Reg_SystemState = InitAddr_InputReg,
+    ADDR_Reg_PlugState_0,
     ADDR_Reg_PlugState_1,
     ADDR_Reg_PlugState_2,
     ADDR_Reg_PlugState_3,
@@ -118,14 +123,14 @@ typedef enum
     ADDR_Reg_PlugState_5,
 
     // analog registers
-    ADDR_Reg_PlugVoltage,
-    ADDR_Reg_BoardCurrent,
     ADDR_Reg_PlugCurrent_0,
     ADDR_Reg_PlugCurrent_1,
     ADDR_Reg_PlugCurrent_2,
     ADDR_Reg_PlugCurrent_3,
     ADDR_Reg_PlugCurrent_4,
     ADDR_Reg_PlugCurrent_5,
+    ADDR_Reg_Voltage,
+    ADDR_Reg_BoardCurrent,
     ADDR_Reg_TempMCU,
     /*End User definitions*/
 
@@ -134,7 +139,7 @@ typedef enum
      * it must not be changed in position.
      */
     SIZE_InputReg
-}AddrInputReg;
+} AddrInputReg;
 
 /*---------------------------------------------------------------------------------------*/
 
@@ -150,6 +155,9 @@ typedef enum
     st_LowCurrent,
     st_OverVoltage,
     st_LowVoltage,
-}PlugState;
+    st_SystemOverCurrent,
+    st_HighTemterature,
+    st_UndefinedError
+} PlugState;
 
 #endif // !MODBUS_ADDR_H

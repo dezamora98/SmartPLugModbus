@@ -17,8 +17,3 @@ inline void GPIOInit(void)
                    1 << SOFT_MOSI | 1 << SOFT_SCK |
                    1 << SOFT_SS0 | 1 << SOFT_SS1;
 }
-
-void GPIOUpdate(void)
-{
-    RELAY_PORT = Coil.Array[0] & 0x3F;
-}

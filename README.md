@@ -34,7 +34,7 @@ Los parámetros de cada enchufe pueden ser leídos en los unos **registros de en
 | 3    |  Reg_PlugState_3   | Plug 3 status                  |
 | 4    |  Reg_PlugState_4   | Plug 4 status                  |
 | 5    |  Reg_PlugState_5   | Plug 5 status                  |
-| 6    |  Reg_PlugVoltage   | Voltage measurement            |
+| 6    |  Reg_Voltage   | Voltage measurement            |
 | 7    |  Reg_BoardCurrent  | Main board current measurement |  
 | 8    |  Reg_PlugCurrent_0 | Current measurement at plug 0  |
 | 9    |  Reg_PlugCurrent_1 | Current measurement at plug 1  |
