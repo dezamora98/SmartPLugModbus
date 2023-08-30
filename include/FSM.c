@@ -37,8 +37,8 @@ void FSM_init(void)
         switch (FSM_State)
         {
         case ST_Standby:
-            AnalogCheck();
             GPIOUpdate();
+            AnalogCheck();
             break;
 
         case ST_ModbusPull:

@@ -31,7 +31,7 @@ typedef enum
 {
     micro,
     mili,
-    min
+    seg
 } t_timeType;
 
 void TimerInit();

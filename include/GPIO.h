@@ -23,7 +23,7 @@
 #define ALL_IN 0x00
 #define ALL_OUT 0xff
 #define RELAY_ON(n) RELAY_PORT &= ~(1 << n)
-#define RELAY_OFF(n) RELAY_PORT |= 1 << n
+#define RELAY_OFF(n) RELAY_PORT |= (1 << n)
 
 /**
  * @brief this function initializes the system GPIOs
@@ -31,10 +31,10 @@
 void GPIOInit(void);
 
 /**
- * @brief this function consists of updating the relay 
+ * @brief this function consists of updating the relay
  * outputs according to the values of the coils.
  **/
-#define GPIOUpdate()  RELAY_PORT = Coil.Array[InitAddr_Coil] & 0x3f
-#define CoilUpdate() Coil.Array[InitAddr_Coil] = Coil.Array[InitAddr_Coil]  & (RELAY_PORT | 0xc0)
- 
+void GPIOUpdate(void);
+#define CoilUpdate() Coil.Array[InitAddr_Coil] = (Coil.Array[InitAddr_Coil]) & (RELAY_PORT | 0xc0)
+
 #endif // !GPIO_H

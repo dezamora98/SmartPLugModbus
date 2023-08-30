@@ -71,6 +71,7 @@ void AnalogInit(void)
 void AnalogCheck(void)
 {
     t_SPMEvent SPMEvent;
+#if false // Non for test
     // checking voltage level (OverVoltage or LowVoltage)
     if (InputReg.Voltage >= HoldingReg.OverVoltage || InputReg.Voltage <= HoldingReg.LowVoltage)
     {
@@ -123,7 +124,9 @@ void AnalogCheck(void)
     {
         SPMEvent.BoardCurrent.EN = false;
     }
+#endif
 
+#if false // Non for test
     // checking CPU temperature
     if (InputReg.TempMCU >= HoldingReg.HighTemperature)
     {
@@ -142,6 +145,7 @@ void AnalogCheck(void)
     {
         SPMEvent.TempMCU.EN = false;
     }
+#endif
 
     // checking the current in the plugs
     for (uint8_t i = 0; i < sizeof_array(InputReg.PlugCurrent); ++i)
@@ -150,17 +154,19 @@ void AnalogCheck(void)
         {
             if (!SPMEvent.PlugCurrent[i].EN)
             {
-                TimerTic(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugOverCurrent, micro);
+                TimerTic(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugOverCurrent, seg);
             }
-            else if (!TimerToc(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugOverCurrent, micro))
+            else if (!TimerToc(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugOverCurrent, seg))
             {
                 RELAY_OFF(i);
                 InputReg.PlugState[i] = st_OverCurrent;
                 Coil.Array[InitAddr_Coil] &= ~(1 << (i + ADDR_Plug_0));
             }
         }
+#if false // Non for test
         else if (InputReg.PlugCurrent[i] <= HoldingReg.PlugLowCurrent)
         {
+
             if (!SPMEvent.PlugCurrent[i].EN)
             {
                 TimerTic(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugLowCurrent, mili);
@@ -171,7 +177,9 @@ void AnalogCheck(void)
                 InputReg.PlugState[i] = st_LowCurrent;
                 Coil.Array[InitAddr_Coil] &= ~(1 << (i + ADDR_Plug_0));
             }
-        }
+
+    }
+#endif
         else
         {
             SPMEvent.PlugCurrent[i].EN = false;
