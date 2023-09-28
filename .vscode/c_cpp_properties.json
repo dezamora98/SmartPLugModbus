@@ -53,7 +53,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60110",
+                "PLATFORMIO=60111",
                 "ARDUINO_AVR_ATmega328P",
                 "F_CPU=16000000L",
                 "ARDUINO_ARCH_AVR",

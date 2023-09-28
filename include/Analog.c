@@ -173,6 +173,7 @@ void AnalogCheck(void)
             }
             else if (!TimerToc(&SPMEvent.PlugCurrent[i], HoldingReg.TimeoutPlugLowCurrent, mili))
             {
+                //quitar esto.
                 RELAY_OFF(i);
                 InputReg.PlugState[i] = st_LowCurrent;
                 Coil.Array[InitAddr_Coil] &= ~(1 << (i + ADDR_Plug_0));
