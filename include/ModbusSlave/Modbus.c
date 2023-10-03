@@ -11,7 +11,7 @@ void ModbusPoll(void)
 
     MB_ERROR = eMBPoll(&MB_eEvent);
 
-    if (MB_ERROR != MB_ENOERR || MB_eEvent == EV_READY || MB_eEvent == EV_FRAME_SENT)
+    if (MB_ERROR != MB_ENOERR || MB_eEvent == EV_READY)
     {
         FSM_State = FSM_LastState;
     }    

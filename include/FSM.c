@@ -9,6 +9,15 @@
 
 inline void ResetCheck(void)
 {
+    if (!ParamCheck())
+    {
+        UpdatePersistentParam();
+        eMBClose();
+        eMBDisable();
+        eMBInit(MB_RTU, HoldingReg.SlaveID, 0, 38400, MB_PAR_NONE);
+        eMBEnable();
+    }
+#if false
     if ((Coil.Array[InitAddr_Coil] & (1 << (ADDR_Reset))) != 0)
     {
         Coil.Array[InitAddr_Coil] = 0;
@@ -20,6 +29,7 @@ inline void ResetCheck(void)
         while (true)
             ;
     }
+#endif
 }
 
 void setProtect(state st)
@@ -28,7 +38,6 @@ void setProtect(state st)
     memset(InputReg.PlugState, st, sizeof(InputReg.PlugState));
     InputReg.SystemState = st;
 }
-
 
 void FSM_init(void)
 {
@@ -46,19 +55,19 @@ void FSM_init(void)
             break;
 
         case ST_Protect_OverVoltage:
-            setProtect(st_OverVoltage);
+            // setProtect(st_OverVoltage);
             break;
 
         case ST_Protect_LowVoltage:
-            setProtect(st_LowVoltage);
+            // setProtect(st_LowVoltage);
             break;
 
         case ST_Protect_CriticalTem:
-            setProtect(st_HighTemterature);
+            // setProtect(st_HighTemterature);
             break;
 
         case ST_Protect_SystemOverCurrent:
-            setProtect(st_SystemOverCurrent);
+            // setProtect(st_SystemOverCurrent);
             break;
 
         default:

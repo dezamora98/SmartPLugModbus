@@ -1,6 +1,5 @@
 #include "Timer.h"
 #include <avr/interrupt.h>
-#include <util/eu_dst.h>
 
 volatile static uint16_t vMicT;
 volatile static uint16_t vMic;
@@ -26,14 +25,12 @@ ISR(TIMER0_COMPA_vect)
 
 void TimerInit(void)
 {
-    // Clear count register
-    TCNT0 = 0;
-    // Comparer
-    OCR0A = 200;
-    // CTC mode
-    TCCR0A = 1 << WGM01;
-    // preescaller -> clk/8 -> 2MHz -> 1/0.5uS
-    TCCR0B = (1 << CS01);
+
+    // Configura el temporizador para que se desborde cada 100us
+    TCCR0A |= (1 << WGM01);  // Modo CTC
+    TCCR0B |= (1 << CS01);   // Preescalador 8
+    OCR0A = 99;              // Valor de comparación para obtener una interrupción cada 100us
+    TIMSK0 |= (1 << OCIE0A); // Habilita la interrupción de comparación A
 }
 
 void TimerTic(t_tic *event, uint16_t timeOut, t_timeType type)

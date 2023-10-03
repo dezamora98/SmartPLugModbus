@@ -28,21 +28,20 @@ void GPIOUpdate(void)
     {
         if ((relay & (1 << i)) != (coils & (1 << i)))
         {
-            if(coils & (1 << i))
+            if (coils & (1 << i))
             {
-                if(InputReg.PlugState[i]==st_On)
+                if (InputReg.PlugState[i] == st_On)
                 {
                     InputReg.PlugState[i] = st_Off;
                 }
-                relay |= (1<<i);
+                RELAY_OFF(i);
             }
             else
             {
                 InputReg.PlugState[i] = st_On;
-                relay &= ~(1<<i);
+                RELAY_ON(i);
             }
         }
         ++i;
     }
-    RELAY_PORT = relay;
 }
