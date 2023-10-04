@@ -9,27 +9,19 @@
 
 inline void ResetCheck(void)
 {
-    if (!ParamCheck())
-    {
-        UpdatePersistentParam();
-        eMBClose();
-        eMBDisable();
-        eMBInit(MB_RTU, HoldingReg.SlaveID, 0, 38400, MB_PAR_NONE);
-        eMBEnable();
-    }
-#if false
-    if ((Coil.Array[InitAddr_Coil] & (1 << (ADDR_Reset))) != 0)
+    if (Coil.Reset != 0)
     {
         Coil.Array[InitAddr_Coil] = 0;
         if (!ParamCheck())
         {
             UpdatePersistentParam();
         }
+        eMBClose();
+        eMBDisable();
         wdt_enable(WDTO_15MS);
         while (true)
             ;
     }
-#endif
 }
 
 void setProtect(state st)

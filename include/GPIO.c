@@ -20,28 +20,23 @@ inline void GPIOInit(void)
 
 void GPIOUpdate(void)
 {
-    uint8_t coils = ~(Coil.Array[InitAddr_Coil]) & 0x3f;
-    uint8_t relay = (RELAY_PORT & 0x3f);
-    uint8_t i = 0;
-
-    while (relay != coils)
+    for (uint8_t i = InitAddr_Coil; i <= ADDR_Plug_5; ++i)
     {
-        if ((relay & (1 << i)) != (coils & (1 << i)))
+        if ((Coil.Array[InitAddr_Coil] & (1 << i)) != 0)
         {
-            if (coils & (1 << i))
-            {
-                if (InputReg.PlugState[i] == st_On)
-                {
-                    InputReg.PlugState[i] = st_Off;
-                }
-                RELAY_OFF(i);
-            }
-            else
+            if (InputReg.PlugState[i] == st_Off)
             {
                 InputReg.PlugState[i] = st_On;
                 RELAY_ON(i);
             }
         }
-        ++i;
+        else
+        {
+            if (InputReg.PlugState[i] == st_On)
+            {
+                InputReg.PlugState[i] = st_Off;
+            }
+            RELAY_OFF(i);
+        }
     }
 }

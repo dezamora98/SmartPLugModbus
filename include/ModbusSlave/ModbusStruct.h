@@ -54,12 +54,27 @@
 #include <stdint.h>
 
 /// @brief this structure is used to define the modbus slave coils.
+#pragma pack(push, 1)
 typedef struct
 {
-    uint8_t Array[(SIZE_Coil + 7) / 8];
+    union
+    {
+        uint8_t Array[(SIZE_Coil + 7) / 8];
+        struct
+        {
+            uint8_t Plug_0 : 1;
+            uint8_t Plug_1 : 1;
+            uint8_t Plug_2 : 1;
+            uint8_t Plug_3 : 1;
+            uint8_t Plug_4 : 1;
+            uint8_t Plug_5 : 1;
+            uint8_t Reset : 1;
+        };
+    };
 } t_Coil;
-
+#pragma pack(pop)
 /// @brief this structure is used to define the modbus slave holding registers.
+#pragma pack(push, 1)
 typedef struct
 {
     union
@@ -95,8 +110,10 @@ typedef struct
         };
     };
 } t_HoldingReg;
+#pragma pack(pop)
 
 /// @brief this structure is used to define the modbus slave input registers.
+#pragma pack(push, 1)
 typedef struct
 {
     union
@@ -127,7 +144,7 @@ typedef struct
         };
     };
 } t_InputReg;
-
+#pragma pack(pop)
 /*****************************************************************************************************/
 
 #endif // !MODBUS_STRUCT_H
